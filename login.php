@@ -1,8 +1,40 @@
+<?php
+require 'config.php';
+$message = '';
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    $stmt = $conn->prepare("SELECT password, is_verified FROM users WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $stmt->store_result();
+
+    if ($stmt->num_rows === 1) {
+        $stmt->bind_result($hashed, $is_verified);
+        $stmt->fetch();
+
+        if (!$is_verified) {
+            $message = "Veuillez vérifier votre compte avant de vous connecter.";
+        } else if (password_verify($password, $hashed)) {
+            header("Location: dashboard.html");
+            exit;
+        } else {
+            $message = "Mot de passe incorrect.";
+        }
+    } else {
+        $message = "Email non trouvé.";
+    }
+
+    $stmt->close();
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Connexion - Gestion de Salles</title>
+  <title>Connexion</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -10,75 +42,95 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
-      margin: 0;
       background: linear-gradient(to right, #2f3e46, #354f52);
+      margin: 0;
     }
     .login-container {
-      background-color: #ffffff;
+      background: #fff;
       padding: 30px;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
       width: 400px;
     }
-    .login-container h2 {
+    h2 {
       text-align: center;
       color: #2f3e46;
-      margin-bottom: 20px;
     }
-    .login-container label {
-      display: block;
-      margin: 10px 0 5px;
+    label {
       font-weight: bold;
+      display: block;
+      margin-top: 10px;
     }
-    .login-container input {
+    input {
       width: 100%;
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 5px;
-      box-sizing: border-box;
     }
-    .login-container button {
+    .password-container {
+      position: relative;
+    }
+    .toggle-password {
+      position: absolute;
+      right: -17px;
+      top: 8px;
+      cursor: pointer;
+    }
+    button {
       width: 100%;
       margin-top: 20px;
       padding: 10px;
-      background-color: #2f3e46;
-      color: #fff;
+      background: #2f3e46;
+      color: white;
       border: none;
       border-radius: 5px;
       font-size: 16px;
-      cursor: pointer;
     }
-    .login-container button:hover {
-      background-color: #52796f;
+    button:hover{
+      background-color :#181818;
     }
     .links {
       text-align: center;
       margin-top: 15px;
     }
     .links a {
-      color: #2f3e46;
-      text-decoration: none;
       margin: 0 10px;
+      text-decoration: none;
+      color: #2f3e46;
     }
-    .links a:hover {
-      text-decoration: underline;
+    .error {
+      color: red;
+      text-align: center;
     }
   </style>
 </head>
 <body>
   <div class="login-container">
     <h2>Connexion</h2>
-    <form action="dashboard.html" method="GET">
+    <?php if (!empty($message)) echo "<p class='error'>$message</p>"; ?>
+    <form action="login.php" method="POST">
       <label for="email">Email</label>
-      <input type="email" id="email" name="email" required>
+      <input type="email" name="email" id="email" required>
+
       <label for="password">Mot de passe</label>
-      <input type="password" id="password" name="password" required>
+      <div class="password-container">
+        <input type="password" name="password" id="password" required>
+        <span class="toggle-password" onclick="togglePassword('password')">👁️</span>
+      </div>
+
       <button type="submit">Se connecter</button>
     </form>
     <div class="links">
-      <a href="mot-de-passe-oublie.html">Mot de passe oublié</a>
-      <a href="creer-compte.html">Créer un compte</a>
+      <a href="mot-de-passe-oublie.php">Mot de passe oublié</a>
+      <a href="creer-compte.php">Créer un compte</a>
     </div>
   </div>
+
+  <script>
+    function togglePassword(id) {
+      var input = document.getElementById(id);
+      input.type = input.type === "password" ? "text" : "password";
+    }
+  </script>
 </body>
 </html>

@@ -1,0 +1,13 @@
+<?php
+// Configuration de la connexion à la base de données
+$host = 'localhost';
+$user = 'root';
+$pass = '';
+$db   = 'utilisateurs_db';
+
+$conn = new mysqli($host, $user, $pass, $db);
+
+if ($conn->connect_error) {
+    die("Erreur de connexion: " . $conn->connect_error);
+}
+?>
