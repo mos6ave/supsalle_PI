@@ -236,6 +236,24 @@
         padding-top: 60px;
         width: 100%;
     }
+}.filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.filter-btn {
+    padding: 8px 15px;
+    background-color: #3A503C;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.filter-btn:hover {
+    background-color: #5fa77c;
 }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -258,7 +276,13 @@
             <div class="header">
                 <h1 class="page-title">Les Salles du SupNum</h1>
             </div>
-            
+            <div class="filter-buttons" style="margin-bottom: 20px;">
+    <button class="filter-btn" data-type="all">Toutes</button>
+    <button class="filter-btn" data-type="cours">Cours</button>
+    <button class="filter-btn" data-type="informatique">Informatique</button>
+    <button class="filter-btn" data-type="laboratoire">Laboratoire</button>
+    <button class="filter-btn" data-type="amphi">Amphithéâtre</button>
+</div>
             <div class="rooms-container">
                 
                 <div class="room-card">
@@ -391,6 +415,27 @@
         });
         document.getElementById('menu-toggle').addEventListener('click', function() {
     document.querySelector('.sidebar').classList.toggle('open');
+});
+document.querySelectorAll('.filter-btn').forEach(button => {
+    button.addEventListener('click', () => {
+        const type = button.dataset.type;
+        document.querySelectorAll('.room-card').forEach(card => {
+            const contenu = card.innerText.toLowerCase();
+            if (type === "all") {
+                card.style.display = "block";
+            } else if (type === "cours" && contenu.includes("salle de cours")) {
+                card.style.display = "block";
+            } else if (type === "informatique" && contenu.includes("salle informatique")) {
+                card.style.display = "block";
+            } else if (type === "laboratoire" && contenu.includes("laboratoire")) {
+                card.style.display = "block";
+            } else if (type === "amphi" && contenu.includes("amphithéâtre")) {
+                card.style.display = "block";
+            } else {
+                card.style.display = "none";
+            }
+        });
+    });
 });
     </script>
 </body>
