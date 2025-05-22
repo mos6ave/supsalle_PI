@@ -19,50 +19,51 @@
             color: #333;
         }
 
-        .sidebar {
+                .barre-laterale {
             width: 250px;
             background-color: #3A503C;
             color: white;
             padding: 20px 0;
+            height: 100vh;
+            position: fixed;
         }
 
-        .sidebar-header {
+        .entete-barre-laterale {
             padding: 0 20px 20px;
-            border-bottom: 1px solid #3A503C;
+            border-bottom: 1px solid #4a6350;
             margin-bottom: 20px;
         }
 
-        .sidebar-header h2 {
+        .entete-barre-laterale h2 {
             color: #ecf0f1;
         }
 
-        .sidebar-menu {
+        .menu-lateral {
             list-style: none;
         }
 
-        .sidebar-menu li {
+        .menu-lateral li {
             margin-bottom: 5px;
+            background-color: #698A6C;
         }
 
-        .sidebar-menu a {
+        .menu-lateral a {
             display: block;
-            color: #bdc3c7;
+            color: #ecf0f1;
             text-decoration: none;
             padding: 10px 20px;
-            background-color: #698A6C;
-            border-radius: 4px;
             transition: all 0.3s;
         }
 
-        .sidebar-menu a:hover,
-        .sidebar-menu a.active {
+        .menu-lateral a:hover {
             background-color: #addaba;
-            color: #22a36f;
+            color: #3A503C;
         }
 
-        main {
-            flex: 1;
-            padding: 30px;
+        .menu-lateral a.active {
+            background-color: #addaba;
+            color: #3A503C;
+            font-weight: bold;
         }
 
         h1 {
@@ -110,7 +111,10 @@
             color: #777;
         }
 
-        .sidebar {
+        
+        .conteneur {
+            display: flex;
+            min-height: 100vh;
             position: fixed;
             /* rend la sidebar fixe */
             top: 0;
@@ -131,20 +135,25 @@
             /* espace réservé à la sidebar fixe */
         }
     </style>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 </head>
 
 <body>
 
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h2>SupSalle</h2>
+    <div class="conteneur">
+       <div class="barre-laterale">
+            <div class="entete-barre-laterale">
+                <h2>SupSalle Admin</h2>
+            </div>
+            <ul class="menu-lateral">
+                <li><a href="adminstrateur_salles.php"><i class="fa-solid fa-building"></i> Gestions des salles</a></li>
+                <li><a href="demandes_rev.php" class="active"><i class="fa-solid fa-calendar-days"></i>Gestion des réservations</a></li>
+                <li><a href="utilisateurs.php"><i class="fa-solid fa-users-gear"></i>Gestion des utilisateurs</a></li>
+                <li><a href="compte.php"><i class="fa-solid fa-gears"></i>Mon compte</a></li>
+            </ul>
         </div>
-        <ul class="sidebar-menu">
-            <li><a href="accueil.html">Accueil</a></li>
-            <li><a href="liste_rev.html">Mes Réservations</a></li>
-            <li><a href="Notification.html">Notification</a></li>
-            <li><a href="compte.html">Compte</a></li>
-        </ul>
+
     </div>
 
     <main>

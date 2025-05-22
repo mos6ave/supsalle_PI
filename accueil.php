@@ -9,146 +9,137 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            display: flex;
-            min-height: 100vh;
-            background-color: #f5f5f5;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f5f5f5;
             color: #333;
-        }
-        thead{
             min-height: 100vh;
-            background-color: #f5f5f5;
-        }
-        tbody{
-            min-height: 100vh;
-            background-color: #f5f5f5;
         }
 
-        .sidebar {
+        .conteneur {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Styles de la barre latérale */
+        .barre-laterale {
             width: 250px;
             background-color: #3A503C;
             color: white;
             padding: 20px 0;
             height: 100vh;
             position: fixed;
+            transition: left 0.3s ease;
+            z-index: 1000;
         }
 
-        .sidebar-header {
+        .entete-barre-laterale {
             padding: 0 20px 20px;
-            border-bottom: 1px solid #3A503C;
+            border-bottom: 1px solid #4a6350;
             margin-bottom: 20px;
         }
 
-        .sidebar-header h2 {
+        .entete-barre-laterale h2 {
             color: #ecf0f1;
         }
 
-        .sidebar-menu {
+        .menu-lateral {
             list-style: none;
         }
 
-        .sidebar-menu li {
+        .menu-lateral li {
             margin-bottom: 5px;
             background-color: #698A6C;
         }
 
-        .sidebar-menu a {
+        .menu-lateral a {
             display: block;
-            color: #bdc3c7;
+            color: #ecf0f1;
             text-decoration: none;
             padding: 10px 20px;
             transition: all 0.3s;
         }
 
-        .sidebar-menu a:hover {
+        .menu-lateral a:hover {
             background-color: #addaba;
-            color: #22a36f;
+            color: #3A503C;
         }
 
-        .sidebar-menu a.active {
+        .menu-lateral a.active {
             background-color: #addaba;
-            color: white;
+            color: #3A503C;
+            font-weight: bold;
         }
 
-        .main-content {
+        /* Styles du contenu principal */
+        .contenu-principal {
             margin-left: 250px;
             padding: 30px;
             width: calc(100% - 250px);
+            transition: margin-left 0.3s ease;
         }
 
-        .card {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 25px;
-        }
-
-        h1 {
-            color: #3A503C; 
-            margin-bottom: 25px;
-        }
-
-        .main-content {
-            flex: 1;
-            padding: 30px;
-        }
-        
-        .header {
+        .entete {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
         }
-        
-        .page-title {
+
+        .titre-page {
             font-size: 1.8rem;
             color: #3A503C;
         }
-        
-        .rooms-container {
+
+        /* Styles du conteneur des salles */
+        .conteneur-salles {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
         }
-        
-        .room-card {
+
+        .carte-salle {
             background-color: white;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             overflow: hidden;
             transition: transform 0.3s;
         }
-        
-        .room-card:hover {
+
+        .carte-salle:hover {
             transform: translateY(-5px);
         }
-        
-        .room-header {
+
+        .entete-carte {
             background-color: #3A503C;
             color: white;
             padding: 15px;
         }
-        
-        .room-body {
+
+        .entete-carte h3 {
+            margin: 0;
+        }
+
+        .corps-carte {
             padding: 20px;
         }
-        
-        .room-feature {
+
+        .caracteristique-salle {
             display: flex;
             margin-bottom: 10px;
+            align-items: center;
         }
-        
-        .room-feature i {
+
+        .caracteristique-salle i {
             margin-right: 10px;
             color: #3A503C;
+            width: 20px;
+            text-align: center;
         }
-        
-        .btn-reserve {
+
+        .bouton-reserver {
             background-color: #5fa77c;
             color: white;
             border: none;
@@ -158,287 +149,266 @@
             width: 100%;
             font-weight: bold;
             transition: background-color 0.3s;
+            margin-top: 10px;
         }
-        
-        .btn-reserve:hover {
-            background-color: #27ae60;
+
+        .bouton-reserver:hover {
+            background-color: #4e8e68;
         }
-        
-        .new-reservation {
-            margin-top: 40px;
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+
+        .filtres-boutons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
         }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
+
+        .bouton-filtre {
+            padding: 8px 15px;
+            background-color: #3A503C;
+            color: white;
+            border: none;
             border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
         }
-        
+
+        .bouton-filtre:hover {
+            background-color: #5fa77c;
+        }
+
+        /* Menu toggle pour mobile */
+        .bouton-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            font-size: 24px;
+            background-color: #3A503C;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            z-index: 1001;
+            cursor: pointer;
+        }
+
         @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
+            .barre-laterale {
+                left: -250px;
             }
-            
-            .sidebar {
+
+            .barre-laterale.ouvert {
+                left: 0;
+            }
+
+            .bouton-menu-toggle {
+                display: block;
+            }
+
+            .contenu-principal {
+                margin-left: 0;
+                padding-top: 70px;
                 width: 100%;
             }
         }
-        .menu-toggle {
-    display: none;
-    position: fixed;
-    top: 15px;
-    left: 15px;
-    font-size: 24px;
-    background-color: #3A503C;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    z-index: 1001;
-    cursor: pointer;
-}
-
-@media (max-width: 768px) {
-    .sidebar {
-        position: fixed;
-        left: -250px;
-        top: 0;
-        height: 100%;
-        transition: left 0.3s ease;
-        z-index: 1000;
-    }
-
-    .sidebar.open {
-        left: 0;
-    }
-
-    .menu-toggle {
-        display: block;
-    }
-
-    .main-content {
-        margin-left: 0;
-        padding-top: 60px;
-        width: 100%;
-    }
-}.filter-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.filter-btn {
-    padding: 8px 15px;
-    background-color: #3A503C;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.filter-btn:hover {
-    background-color: #5fa77c;
-}
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-<button id="menu-toggle" class="menu-toggle">☰</button>
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h2>SupSalle</h2>
-        </div>
-        <ul class="sidebar-menu">
-            <li><a href="accueil.php">Accueil</a></li>
-            <li><a href="liste_rev.php">Mes Reservation</a></li>
-            <li><a href="Notification.php">Notification</a></li>
-            <li><a href="compte.php">Compte</a></li>
-        </ul>
-    </div>
-
-        <div class="main-content">
-            <div class="header">
-                <h1 class="page-title">Les Salles du SupNum</h1>
+    <button id="bouton-menu-toggle" class="bouton-menu-toggle">☰</button>
+    
+    <div class="conteneur">
+        <div class="barre-laterale">
+            <div class="entete-barre-laterale">
+                <h2>SupSalle</h2>
             </div>
-            <div class="filter-buttons" style="margin-bottom: 20px;">
-    <button class="filter-btn" data-type="all">Toutes</button>
-    <button class="filter-btn" data-type="cours">Cours</button>
-    <button class="filter-btn" data-type="informatique">Informatique</button>
-    <button class="filter-btn" data-type="laboratoire">Laboratoire</button>
-    <button class="filter-btn" data-type="amphi">Amphithéâtre</button>
-</div>
-            <div class="rooms-container">
-                
-                <div class="room-card">
-                    <div class="room-header">
+            <ul class="menu-lateral">
+                <li><a href="accueil.php" class="active"><i class="fas fa-home"></i> Accueil</a></li>
+                <li><a href="liste_rev.php"><i class="fas fa-calendar-check"></i> Mes Réservations</a></li>
+                <li><a href="Notification.php"><i class="fas fa-bell"></i> Notifications</a></li>
+                <li><a href="compte.php"><i class="fas fa-user-cog"></i> Mon Compte</a></li>
+            </ul>
+        </div>
+
+        <div class="contenu-principal">
+            <div class="entete">
+                <h1 class="titre-page">Les Salles du SupNum</h1>
+            </div>
+            
+            <div class="filtres-boutons">
+                <button class="bouton-filtre" data-type="all">Toutes</button>
+                <button class="bouton-filtre" data-type="cours">Salles de cours</button>
+                <button class="bouton-filtre" data-type="informatique">Salles informatique</button>
+                <button class="bouton-filtre" data-type="laboratoire">Laboratoires</button>
+                <button class="bouton-filtre" data-type="amphi">Amphithéâtres</button>
+            </div>
+            
+            <div class="conteneur-salles" id="conteneur-salles">
+                <div class="carte-salle">
+                    <div class="entete-carte">
                         <h3>Salle 103</h3>
                     </div>
-                    <div class="room-body">
-                        <div class="room-feature">
+                    <div class="corps-carte">
+                        <div class="caracteristique-salle">
                             <i class="fas fa-chalkboard-teacher"></i>
                             <span>Type: Salle de cours</span>
                         </div>
-                        <div class="room-feature">
+                        <div class="caracteristique-salle">
                             <i class="fas fa-users"></i>
                             <span>Capacité: 80 places</span>
                         </div>
-                        <div class="room-feature">
+                        <div class="caracteristique-salle">
                             <i class="fas fa-tools"></i>
                             <span>Équipements: Projecteur, tableau blanc, système audio</span>
                         </div>
-                        <button class="btn-reserve">Réserver cette salle</button>
+                        <button class="bouton-reserver">Réserver cette salle</button>
                     </div>
                 </div>
                 
-               
-                <div class="room-card">
-                    <div class="room-header">
+                <div class="carte-salle">
+                    <div class="entete-carte">
                         <h3>Salle RSS</h3>
                     </div>
-                    <div class="room-body">
-                        <div class="room-feature">
+                    <div class="corps-carte">
+                        <div class="caracteristique-salle">
                             <i class="fas fa-desktop"></i>
                             <span>Type: Salle informatique</span>
                         </div>
-                        <div class="room-feature">
+                        <div class="caracteristique-salle">
                             <i class="fas fa-users"></i>
                             <span>Capacité: 25 places</span>
                         </div>
-                        <div class="room-feature">
+                        <div class="caracteristique-salle">
                             <i class="fas fa-tools"></i>
                             <span>Équipements: Ordinateurs, vidéoprojecteur</span>
                         </div>
-                        <button class="btn-reserve">Réserver cette salle</button>
+                        <button class="bouton-reserver">Réserver cette salle</button>
                     </div>
                 </div>
                 
-               
-                <div class="room-card">
-                    <div class="room-header">
+                <div class="carte-salle">
+                    <div class="entete-carte">
                         <h3>Salle Namélozine</h3>
                     </div>
-                    <div class="room-body">
-                        <div class="room-feature">
+                    <div class="corps-carte">
+                        <div class="caracteristique-salle">
                             <i class="fas fa-chalkboard-teacher"></i>
                             <span>Type: Salle de cours</span>
                         </div>
-                        <div class="room-feature">
+                        <div class="caracteristique-salle">
                             <i class="fas fa-users"></i>
                             <span>Capacité: 80 places</span>
                         </div>
-                        <div class="room-feature">
+                        <div class="caracteristique-salle">
                             <i class="fas fa-tools"></i>
                             <span>Équipements: Tableau interactif, système de visioconférence</span>
                         </div>
-                        <button class="btn-reserve">Réserver cette salle</button>
-                    </div>
-                </div>
-             
-                <div class="room-card">
-                    <div class="room-header">
-                        <h3>Salle Khawarami</h3>
-                    </div>
-                    <div class="room-body">
-                        <div class="room-feature">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                            <span>Type: Amphithéâtre</span>
-                        </div>
-                        <div class="room-feature">
-                            <i class="fas fa-users"></i>
-                            <span>Capacité: 130 places</span>
-                        </div>
-                        <div class="room-feature">
-                            <i class="fas fa-tools"></i>
-                            <span>Équipements: Système audiovisuel complet, climatisation</span>
-                        </div>
-                        <button class="btn-reserve">Réserver cette salle</button>
+                        <button class="bouton-reserver">Réserver cette salle</button>
                     </div>
                 </div>
                 
-              
-                <div class="room-card">
-                    <div class="room-header">
+                <div class="carte-salle">
+                    <div class="entete-carte">
+                        <h3>Salle Khawarami</h3>
+                    </div>
+                    <div class="corps-carte">
+                        <div class="caracteristique-salle">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            <span>Type: Amphithéâtre</span>
+                        </div>
+                        <div class="caracteristique-salle">
+                            <i class="fas fa-users"></i>
+                            <span>Capacité: 130 places</span>
+                        </div>
+                        <div class="caracteristique-salle">
+                            <i class="fas fa-tools"></i>
+                            <span>Équipements: Système audiovisuel complet, climatisation</span>
+                        </div>
+                        <button class="bouton-reserver">Réserver cette salle</button>
+                    </div>
+                </div>
+                
+                <div class="carte-salle">
+                    <div class="entete-carte">
                         <h3>Laboratoire B204</h3>
                     </div>
-                    <div class="room-body">
-                        <div class="room-feature">
+                    <div class="corps-carte">
+                        <div class="caracteristique-salle">
                             <i class="fas fa-flask"></i>
                             <span>Type: Laboratoire</span>
                         </div>
-                        <div class="room-feature">
+                        <div class="caracteristique-salle">
                             <i class="fas fa-users"></i>
                             <span>Capacité: 40 places</span>
                         </div>
-                        <div class="room-feature">
+                        <div class="caracteristique-salle">
                             <i class="fas fa-tools"></i>
                             <span>Équipements: Matériel de laboratoire complet, hottes de sécurité</span>
                         </div>
-                        <button class="btn-reserve">Réserver cette salle</button>
+                        <button class="bouton-reserver">Réserver cette salle</button>
                     </div>
                 </div>
             </div>
-            
-        
-                </form>
-            </div>
         </div>
     </div>
-        <script>
+
+    <script>
+        // Fonction pour rediriger vers la page de réservation
         function reserverSalle(nomSalle) {
             localStorage.setItem('salleSelectionnee', nomSalle);
-            window.location.href = "nouvelle_reservastion.php";
+            window.location.href = "nouvelle_reservation.php";
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            const boutons = document.querySelectorAll('.btn-reserve');
-            
-            boutons.forEach(bouton => {
-                const nomSalle = bouton.closest('.room-card').querySelector('.room-header h3').textContent;
+            // Gestion des boutons de réservation
+            document.querySelectorAll('.bouton-reserver').forEach(bouton => {
+                const nomSalle = bouton.closest('.carte-salle').querySelector('.entete-carte h3').textContent;
                 bouton.addEventListener('click', () => reserverSalle(nomSalle));
             });
+            
+            // Gestion du menu mobile
+            document.getElementById('bouton-menu-toggle').addEventListener('click', function() {
+                document.querySelector('.barre-laterale').classList.toggle('ouvert');
+            });
+            
+            // Gestion des filtres
+            document.querySelectorAll('.bouton-filtre').forEach(button => {
+                button.addEventListener('click', () => {
+                    const type = button.dataset.type;
+                    document.querySelectorAll('.carte-salle').forEach(card => {
+                        const contenu = card.innerText.toLowerCase();
+                        
+                        if (type === "all") {
+                            card.style.display = "block";
+                        } 
+                        else if (type === "cours" && contenu.includes("salle de cours")) {
+                            card.style.display = "block";
+                        } 
+                        else if (type === "informatique" && contenu.includes("salle informatique")) {
+                            card.style.display = "block";
+                        } 
+                        else if (type === "laboratoire" && contenu.includes("laboratoire")) {
+                            card.style.display = "block";
+                        } 
+                        else if (type === "amphi" && contenu.includes("amphithéâtre")) {
+                            card.style.display = "block";
+                        } 
+                        else {
+                            card.style.display = "none";
+                        }
+                    });
+                    
+                    // Mise à jour de l'état actif des boutons
+                    document.querySelectorAll('.bouton-filtre').forEach(btn => {
+                        btn.style.backgroundColor = btn === button ? '#5fa77c' : '#3A503C';
+                    });
+                });
+            });
+            
+            // Activer le filtre "Toutes" par défaut
+            document.querySelector('.bouton-filtre[data-type="all"]').click();
         });
-        document.getElementById('menu-toggle').addEventListener('click', function() {
-    document.querySelector('.sidebar').classList.toggle('open');
-});
-document.querySelectorAll('.filter-btn').forEach(button => {
-    button.addEventListener('click', () => {
-        const type = button.dataset.type;
-        document.querySelectorAll('.room-card').forEach(card => {
-            const contenu = card.innerText.toLowerCase();
-            if (type === "all") {
-                card.style.display = "block";
-            } else if (type === "cours" && contenu.includes("salle de cours")) {
-                card.style.display = "block";
-            } else if (type === "informatique" && contenu.includes("salle informatique")) {
-                card.style.display = "block";
-            } else if (type === "laboratoire" && contenu.includes("laboratoire")) {
-                card.style.display = "block";
-            } else if (type === "amphi" && contenu.includes("amphithéâtre")) {
-                card.style.display = "block";
-            } else {
-                card.style.display = "none";
-            }
-        });
-    });
-});
     </script>
 </body>
 </html>
-
-

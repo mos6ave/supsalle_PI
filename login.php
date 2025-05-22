@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         if (!$is_verified) {
             $message = "Veuillez vérifier votre compte avant de vous connecter.";
         } else if (password_verify($password, $hashed)) {
-            header("Location: dashboard.html");
+            header("Location:accueil.php");
             exit;
         } else {
             $message = "Mot de passe incorrect.";
