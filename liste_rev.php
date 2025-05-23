@@ -1,147 +1,277 @@
+<?php
+session_start();
+if (!isset($_SESSION['email'])) {
+    header("Location: login.php");
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
-    <title>Liste des Réservations</title>
+    <title>SupSalle - Mes Réservations</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            display: flex;
-            min-height: 100vh;
             background-color: #f5f5f5;
             color: #333;
+            min-height: 100vh;
         }
 
-        .sidebar {
+        .conteneur {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Barre latérale */
+        .barre-laterale {
             width: 250px;
             background-color: #3A503C;
             color: white;
             padding: 20px 0;
+            height: 100vh;
+            position: fixed;
         }
 
-        .sidebar-header {
+        .entete-barre-laterale {
             padding: 0 20px 20px;
-            border-bottom: 1px solid #3A503C;
+            border-bottom: 1px solid #4a6350;
             margin-bottom: 20px;
+            text-align: center;
         }
 
-        .sidebar-header h2 {
+        .entete-barre-laterale h2 {
             color: #ecf0f1;
         }
 
-        .sidebar-menu {
+        .menu-lateral {
             list-style: none;
         }
 
-        .sidebar-menu li {
+        .menu-lateral li {
             margin-bottom: 5px;
+            background-color: #698A6C;
         }
 
-        .sidebar-menu a {
+        .menu-lateral a {
             display: block;
-            color: #bdc3c7;
+            color: #ecf0f1;
             text-decoration: none;
             padding: 10px 20px;
-            background-color: #698A6C;
-            border-radius: 4px;
             transition: all 0.3s;
         }
 
-        .sidebar-menu a:hover,
-        .sidebar-menu a.active {
+        .menu-lateral a:hover,
+        .menu-lateral a.active {
             background-color: #addaba;
-            color: #22a36f;
+            color: #3A503C;
         }
 
-        main {
-            flex: 1;
+        /* Contenu principal */
+        .contenu-principal {
+            margin-left: 250px;
             padding: 30px;
+            width: calc(100% - 250px);
         }
 
-        h1 {
-            color: #2c3e50;
+        .titre-page {
+            font-size: 1.8rem;
+            color: #3A503C;
+            margin-bottom: 30px;
         }
 
-        .reservation {
+        /* Réservations */
+        .carte-reservation {
             background-color: white;
-            border-left: 5px solid #5fa77c;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 20px;
             margin-bottom: 20px;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid #5fa77c;
         }
 
-        .reservation p {
-            margin: 5px 0;
+        .carte-reservation h3 {
+            color: #3A503C;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .sidebar {
+        .caracteristique-reservation {
+            display: flex;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .caracteristique-reservation i {
+            margin-right: 10px;
+            color: #3A503C;
+            width: 20px;
+            text-align: center;
+        }
+
+        .bouton-annuler {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .bouton-annuler:hover {
+            background-color: #c0392b;
+        }
+
+        .aucune-reservation {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+            color: #666;
+        }
+
+        /* Menu mobile */
+        .bouton-menu-toggle {
+            display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 250px;
-            height: 100vh;
+            top: 15px;
+            left: 15px;
+            font-size: 24px;
             background-color: #3A503C;
             color: white;
-            padding: 20px 0;
-            z-index: 1000;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            z-index: 1001;
+            cursor: pointer;
         }
 
-        main {
-            flex: 1;
-            padding: 30px;
-            margin-left: 250px;
+        @media (max-width: 768px) {
+            .barre-laterale {
+                left: -250px;
+                transition: left 0.3s ease;
+            }
+
+            .barre-laterale.ouvert {
+                left: 0;
+            }
+
+            .bouton-menu-toggle {
+                display: block;
+            }
+
+            .contenu-principal {
+                margin-left: 0;
+                padding-top: 70px;
+                width: 100%;
+            }
         }
     </style>
 </head>
-
 <body>
-
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h2>SupSalle</h2>
+    <button id="bouton-menu-toggle" class="bouton-menu-toggle">☰</button>
+    
+    <div class="conteneur">
+        <div class="barre-laterale">
+            <div class="entete-barre-laterale">
+                <h2>SupSalle</h2>
+            </div>
+            <ul class="menu-lateral">
+                <li><a href="accueil.php"><i class="fas fa-home"></i> Accueil</a></li>
+                <li><a href="liste_rev.php" class="active"><i class="fas fa-calendar-check"></i> Mes Réservations</a></li>
+                <li><a href="Notification.php"><i class="fas fa-bell"></i> Notifications</a></li>
+                <li><a href="compte.php"><i class="fas fa-user-cog"></i> Mon Compte</a></li>
+            </ul>
         </div>
-        <ul class="sidebar-menu">
-            <li><a href="accueil.php">Accueil</a></li>
-            <li><a href="liste_rev.php">Mes Réservations</a></li>
-            <li><a href="Notification.php">Notification</a></li>
-            <li><a href="compte.php">Compte</a></li>
-        </ul>
+
+        <div class="contenu-principal">
+            <h1 class="titre-page"><i class="fas fa-calendar-alt"></i> Mes Réservations</h1>
+            
+            <div id="conteneur-reservations" class="conteneur-reservations">
+                <!-- Les réservations seront chargées ici par JavaScript -->
+                <div class="aucune-reservation">
+                    <i class="fas fa-calendar-times" style="font-size: 2rem; margin-bottom: 15px;"></i>
+                    <p>Aucune réservation trouvée</p>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <main>
-        <h1>Réservations Acceptées</h1>
-        <div id="liste-reservations"></div>
-    </main>
-
     <script>
-        const reservations = JSON.parse(localStorage.getItem("reservationsValidees")) || [];
-        const container = document.getElementById("liste-reservations");
+        // Gestion du menu mobile
+        document.getElementById('bouton-menu-toggle').addEventListener('click', function() {
+            document.querySelector('.barre-laterale').classList.toggle('ouvert');
+        });
 
-        if (reservations.length === 0) {
-            container.innerHTML = "<p>Aucune réservation acceptée pour le moment.</p>";
-        } else {
+        // Fonction pour annuler une réservation
+        function annulerReservation(id) {
+            if (confirm("Êtes-vous sûr de vouloir annuler cette réservation ?")) {
+                // Logique d'annulation ici
+                console.log("Annulation de la réservation", id);
+                // Actualiser l'affichage
+                chargerReservations();
+            }
+        }
+
+        // Fonction pour charger les réservations
+        function chargerReservations() {
+            const container = document.getElementById("conteneur-reservations");
+            
+            // Récupérer depuis localStorage ou API
+            const reservations = JSON.parse(localStorage.getItem("reservationsValidees")) || [];
+            
+            if (reservations.length === 0) {
+                container.innerHTML = `
+                    <div class="aucune-reservation">
+                        <i class="fas fa-calendar-times" style="font-size: 2rem; margin-bottom: 15px;"></i>
+                        <p>Aucune réservation trouvée</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+            
             reservations.forEach(reservation => {
-                const div = document.createElement("div");
-                div.className = "reservation";
-                div.innerHTML = `
-          <strong>${reservation.salle}</strong><br>
-          <p><strong>Date</strong> : ${reservation.date}</p>
-          <p><strong>Heure</strong> : ${reservation.heureDebut} - ${reservation.heureFin}</p>
-          <p><strong>Demandeur</strong> : ${reservation.nom || "Utilisateur"}</p>
-        `;
-                container.appendChild(div);
+                const carte = document.createElement("div");
+                carte.className = "carte-reservation";
+                carte.innerHTML = `
+                    <h3><i class="fas fa-door-open"></i> ${reservation.salle}</h3>
+                    <div class="caracteristique-reservation">
+                        <i class="fas fa-calendar-day"></i>
+                        <span><strong>Date :</strong> ${reservation.date}</span>
+                    </div>
+                    <div class="caracteristique-reservation">
+                        <i class="fas fa-clock"></i>
+                        <span><strong>Heure :</strong> ${reservation.heureDebut} - ${reservation.heureFin}</span>
+                    </div>
+                    <div class="caracteristique-reservation">
+                        <i class="fas fa-user"></i>
+                        <span><strong>Statut :</strong> Acceptée</span>
+                    </div>
+                    <button class="bouton-annuler" onclick="annulerReservation('${reservation.id}')">
+                        <i class="fas fa-times"></i> Annuler la réservation
+                    </button>
+                `;
+                container.appendChild(carte);
             });
         }
+
+        // Charger les réservations au démarrage
+        document.addEventListener('DOMContentLoaded', chargerReservations);
     </script>
-
 </body>
-
 </html>

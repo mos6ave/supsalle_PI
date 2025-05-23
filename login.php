@@ -1,5 +1,6 @@
 <?php
 require 'config.php';
+session_start();
 $message = '';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -18,6 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         if (!$is_verified) {
             $message = "Veuillez vérifier votre compte avant de vous connecter.";
         } else if (password_verify($password, $hashed)) {
+          $_SESSION['email'] = $email;  
             header("Location:accueil.php");
             exit;
         } else {
