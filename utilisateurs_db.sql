@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : mar. 20 mai 2025 à 22:19
+-- Généré le : sam. 24 mai 2025 à 16:27
 -- Version du serveur : 10.4.32-MariaDB
 -- Version de PHP : 8.2.12
 
@@ -48,7 +48,8 @@ CREATE TABLE `salles` (
   `nom` varchar(100) DEFAULT NULL,
   `type` varchar(100) DEFAULT NULL,
   `capacité` int(11) DEFAULT NULL,
-  `équipements` text DEFAULT NULL
+  `équipements` text DEFAULT NULL,
+  `statut` enum('disponible','en maintenance') DEFAULT 'disponible'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -64,12 +65,18 @@ CREATE TABLE `users` (
   `password` varchar(255) DEFAULT NULL,
   `otp_code` varchar(10) DEFAULT NULL,
   `otp_expiration` datetime DEFAULT NULL,
-  `is_verified` tinyint(1) DEFAULT 0
+  `is_verified` tinyint(1) DEFAULT 0,
+  `role` enum('user','admin') DEFAULT 'user'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `users`
 --
+
+INSERT INTO `users` (`id`, `fullname`, `email`, `password`, `otp_code`, `otp_expiration`, `is_verified`, `role`) VALUES
+(2, 'ramoule', '24144@supnum.mr', '$2y$10$andkEFXssfpYR7ZaWIRITOzzbKaG79ps3wCz8ceMwGJWuzJPYEJWy', '775916', '2025-05-20 21:55:18', 0, 'user'),
+(3, 'ramoule', 'ramlebeirouk08@gmail.com', '$2y$10$9yhuj3JglhZOzATF1A.68.yUmC53mtYo9/0pTYNj5rlOluJB5x6BO', NULL, NULL, 0, 'user'),
+(7, 'ramoule', '24128@supnum.mr', '$2y$10$A/gzdqSMWTFKTsbc7OkIK.uIwol.hSymB6tTQEqzdnLNBtw7sjEv.', NULL, NULL, 1, 'admin');
 
 --
 -- Index pour les tables déchargées
@@ -116,7 +123,7 @@ ALTER TABLE `salles`
 -- AUTO_INCREMENT pour la table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Contraintes pour les tables déchargées

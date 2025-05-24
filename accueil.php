@@ -1,3 +1,20 @@
+<?php
+session_start();
+
+// Si un admin arrive sur la page utilisateur, redirigez-le
+if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+    header("Location: admin_dashboard.php");
+    exit;
+}
+
+// Si l'utilisateur n'est pas connecté, redirigez-le
+if (!isset($_SESSION['email'])) {
+    header("Location: login.php");
+    exit;
+}
+
+// Contenu normal de la page d'accueil
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -411,4 +428,4 @@
         });
     </script>
 </body>
-</html>
+</html> 

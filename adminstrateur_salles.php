@@ -1,3 +1,67 @@
+<?php
+session_start();
+if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'admin') {
+    header("Location: login.php");
+    exit;
+}
+
+// Connexion à la base de données
+require_once 'config.php';
+
+// Récupérer toutes les salles
+$query = "SELECT * FROM salles";
+$result = $conn->query($query);
+$salles = [];
+if ($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()) {
+        $salles[] = $row;
+    }
+}
+
+// Gestion des actions (ajout, modification, suppression)
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['action'])) {
+        switch ($_POST['action']) {
+            case 'ajouter':
+                $nom = $conn->real_escape_string($_POST['nom']);
+                $type = $conn->real_escape_string($_POST['type']);
+                $capacite = intval($_POST['capacite']);
+                $equipement = $conn->real_escape_string($_POST['equipement']);
+                
+                $stmt = $conn->prepare("INSERT INTO salles (nom, type, capacité, équipements) VALUES (?, ?, ?, ?)");
+                $stmt->bind_param("ssis", $nom, $type, $capacite, $equipement);
+                $stmt->execute();
+                $stmt->close();
+                break;
+                
+            case 'modifier':
+                $id = intval($_POST['id']);
+                $nom = $conn->real_escape_string($_POST['nom']);
+                $type = $conn->real_escape_string($_POST['type']);
+                $capacite = intval($_POST['capacite']);
+                $equipement = $conn->real_escape_string($_POST['equipement']);
+                
+                $stmt = $conn->prepare("UPDATE salles SET nom=?, type=?, capacité=?, équipements=? WHERE id=?");
+                $stmt->bind_param("ssisi", $nom, $type, $capacite, $equipement, $id);
+                $stmt->execute();
+                $stmt->close();
+                break;
+                
+            case 'supprimer':
+                $id = intval($_POST['id']);
+                $stmt = $conn->prepare("DELETE FROM salles WHERE id=?");
+                $stmt->bind_param("i", $id);
+                $stmt->execute();
+                $stmt->close();
+                break;
+        }
+        
+        // Rafraîchir la page après modification
+        header("Location: adminstrateur_salles.php");
+        exit;
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -308,7 +372,7 @@
                 <h2>SupSalle Admin</h2>
             </div>
             <ul class="menu-lateral">
-                <li><a href="adminstrateur_salle.php" class="active" ><i class="fa-solid fa-building"></i> Gestions des salles</a></li>
+                <li><a href="adminstrateur_salle.php" class="active"><i class="fa-solid fa-building"></i> Gestions des salles</a></li>
                 <li><a href="demandes_rev.php"><i class="fa-solid fa-calendar-days"></i>Gestion des réservations</a></li>
                 <li><a href="utilisateurs.php"><i class="fa-solid fa-users-gear"></i>Gestion des utilisateurs</a></li>
                 <li><a href="compte.php"><i class="fa-solid fa-gears"></i>Mon compte</a></li>
@@ -324,7 +388,38 @@
             </div>
             
             <div class="conteneur-salles" id="conteneur-salles">
-
+                <?php foreach ($salles as $salle): ?>
+                <div class="carte-salle">
+                    <div class="entete-carte">
+                        <h3><?= htmlspecialchars($salle['nom']) ?></h3>
+                        <div class="actions-salle">
+                            <button class="bouton-action bouton-modifier" data-salle-id="<?= $salle['id'] ?>">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="bouton-action bouton-supprimer" data-salle-id="<?= $salle['id'] ?>">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="corps-carte">
+                        <div class="caracteristique-salle">
+                            <i class="fas fa-<?= 
+                                ($salle['type'] === 'salle informatique') ? 'desktop' : 
+                                (($salle['type'] === 'laboratoire') ? 'flask' : 'chalkboard-teacher') 
+                            ?>"></i>
+                            <span>Type: <?= ucfirst($salle['type']) ?></span>
+                        </div>
+                        <div class="caracteristique-salle">
+                            <i class="fas fa-users"></i>
+                            <span>Capacité: <?= $salle['capacité'] ?> places</span>
+                        </div>
+                        <div class="caracteristique-salle">
+                            <i class="fas fa-tools"></i>
+                            <span>Équipements: <?= htmlspecialchars($salle['équipements']) ?></span>
+                        </div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
             </div>
         </div>
     </div>
@@ -333,17 +428,18 @@
         <div class="contenu-modale">
             <div class="entete-modale">
                 <h3 class="titre-modale" id="titre-modale">Ajouter une salle</h3>
-                <button class="bouton-fermer" id="fermer-modale"></button>
+                <button class="bouton-fermer" id="fermer-modale">&times;</button>
             </div>
-            <form id="formulaire-salle">
-                <input type="hidden" id="id-salle">
+            <form id="formulaire-salle" method="post">
+                <input type="hidden" id="id-salle" name="id">
+                <input type="hidden" name="action" id="form-action" value="ajouter">
                 <div class="groupe-formulaire">
                     <label for="nom-salle">Nom de la salle</label>
-                    <input type="text" class="controle-formulaire" id="nom-salle" required>
+                    <input type="text" class="controle-formulaire" id="nom-salle" name="nom" required>
                 </div>
                 <div class="groupe-formulaire">
                     <label for="type-salle">Type de salle</label>
-                    <select class="controle-formulaire" id="type-salle" required>
+                    <select class="controle-formulaire" id="type-salle" name="type" required>
                         <option value="salle de cours">Salle de cours</option>
                         <option value="salle informatique">Salle informatique</option>
                         <option value="amphithéâtre">Amphithéâtre</option>
@@ -352,11 +448,11 @@
                 </div>
                 <div class="groupe-formulaire">
                     <label for="capacite-salle">Capacité</label>
-                    <input type="number" class="controle-formulaire" id="capacite-salle" min="1" required>
+                    <input type="number" class="controle-formulaire" id="capacite-salle" name="capacite" min="1" required>
                 </div>
                 <div class="groupe-formulaire">
                     <label for="equipement-salle">Équipements (séparés par des virgules)</label>
-                    <textarea class="controle-formulaire" id="equipement-salle" rows="3"></textarea>
+                    <textarea class="controle-formulaire" id="equipement-salle" name="equipement" rows="3"></textarea>
                 </div>
                 <div class="actions-formulaire">
                     <button type="button" class="bouton bouton-secondaire" id="bouton-annuler">Annuler</button>
@@ -370,224 +466,103 @@
         <div class="contenu-modale">
             <div class="entete-modale">
                 <h3 class="titre-modale">Confirmer la suppression</h3>
-                <button class="bouton-fermer" id="fermer-modale-confirmation"></button>
+                <button class="bouton-fermer" id="fermer-modale-confirmation">&times;</button>
             </div>
             <p>Êtes-vous sûr de vouloir supprimer cette salle ? Cette action est irréversible.</p>
-            <div class="actions-formulaire">
-                <button type="button" class="bouton bouton-secondaire" id="annuler-suppression">Annuler</button>
-                <button type="button" class="bouton bouton-danger" id="confirmer-suppression">Supprimer</button>
-            </div>
+            <form id="formulaire-suppression" method="post">
+                <input type="hidden" name="action" value="supprimer">
+                <input type="hidden" id="id-suppression" name="id">
+                <div class="actions-formulaire">
+                    <button type="button" class="bouton bouton-secondaire" id="annuler-suppression">Annuler</button>
+                    <button type="submit" class="bouton bouton-danger" id="confirmer-suppression">Supprimer</button>
+                </div>
+            </form>
         </div>
     </div>
 
     <script>
-        let donneesSalles = [
-            {
-                id: 1,
-                nom: "Salle 103",
-                type: "salle de cours",
-                capacite: 80,
-                equipement: "Projecteur, tableau blanc, système audio",
-                icone: "chalkboard-teacher"
-            },
-            {
-                id: 2,
-                nom: "Salle RSS",
-                type: "salle informatique",
-                capacite: 25,
-                equipement: "Ordinateurs, vidéoprojecteur",
-                icone: "desktop"
-            },
-            {
-                id: 3,
-                nom: "Salle Namélozine",
-                type: "salle de cours",
-                capacite: 80,
-                equipement: "Tableau interactif, système de visioconférence",
-                icone: "chalkboard-teacher"
-            },
-            {
-                id: 4,
-                nom: "Salle Khawarami",
-                type: "amphithéâtre",
-                capacite: 130,
-                equipement: "Système audiovisuel complet, climatisation",
-                icone: "chalkboard-teacher"
-            },
-            {
-                id: 5,
-                nom: "Laboratoire B204",
-                type: "laboratoire",
-                capacite: 40,
-                equipement: "Matériel de laboratoire complet, hottes de sécurité",
-                icone: "flask"
-            }
-        ];
+        document.addEventListener('DOMContentLoaded', function() {
+            const boutonAjouterSalle = document.getElementById('bouton-ajouter-salle');
+            const modaleSalle = document.getElementById('modale-salle');
+            const modaleConfirmation = document.getElementById('modale-confirmation');
+            const formulaireSalle = document.getElementById('formulaire-salle');
+            const formulaireSuppression = document.getElementById('formulaire-suppression');
+            const titreModale = document.getElementById('titre-modale');
+            const idSalleInput = document.getElementById('id-salle');
+            const idSuppressionInput = document.getElementById('id-suppression');
+            const formActionInput = document.getElementById('form-action');
+            const nomSalleInput = document.getElementById('nom-salle');
+            const typeSalleInput = document.getElementById('type-salle');
+            const capaciteSalleInput = document.getElementById('capacite-salle');
+            const equipementSalleInput = document.getElementById('equipement-salle');
+            const fermerModaleBtn = document.getElementById('fermer-modale');
+            const fermerModaleConfirmationBtn = document.getElementById('fermer-modale-confirmation');
+            const boutonAnnuler = document.getElementById('bouton-annuler');
+            const annulerSuppressionBtn = document.getElementById('annuler-suppression');
+            
+            let enModeEdition = false;
 
-        const conteneurSalles = document.getElementById('conteneur-salles');
-        const boutonAjouterSalle = document.getElementById('bouton-ajouter-salle');
-        const modaleSalle = document.getElementById('modale-salle');
-        const modaleConfirmation = document.getElementById('modale-confirmation');
-        const formulaireSalle = document.getElementById('formulaire-salle');
-        const titreModale = document.getElementById('titre-modale');
-        const idSalleInput = document.getElementById('id-salle');
-        const nomSalleInput = document.getElementById('nom-salle');
-        const typeSalleInput = document.getElementById('type-salle');
-        const capaciteSalleInput = document.getElementById('capacite-salle');
-        const equipementSalleInput = document.getElementById('equipement-salle');
-        const fermerModaleBtn = document.getElementById('fermer-modale');
-        const fermerModaleConfirmationBtn = document.getElementById('fermer-modale-confirmation');
-        const boutonAnnuler = document.getElementById('bouton-annuler');
-        const annulerSuppressionBtn = document.getElementById('annuler-suppression');
-        const confirmerSuppressionBtn = document.getElementById('confirmer-suppression');
-        
-        let idSalleCourante = null;
-        let enModeEdition = false;
-
-        function afficherSalles() {
-            conteneurSalles.innerHTML = '';
-
-            if (donneesSalles.length === 0) {
-                conteneurSalles.innerHTML = '<p class="aucun-resultat">Aucune salle disponible.</p>';
-                return;
-            }
-
-            donneesSalles.forEach(salle => {
-                const carteSalle = document.createElement('div');
-                carteSalle.className = 'carte-salle';
-                carteSalle.innerHTML = `
-                    <div class="entete-carte">
-                        <h3>${salle.nom}</h3>
-                        <div class="actions-salle">
-                            <button class="bouton-action bouton-modifier" data-salle-id="${salle.id}">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="bouton-action bouton-supprimer" data-salle-id="${salle.id}">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="corps-carte">
-                        <div class="caracteristique-salle">
-                            <i class="fas fa-${salle.icone}"></i>
-                            <span>Type: ${salle.type.charAt(0).toUpperCase() + salle.type.slice(1)}</span>
-                        </div>
-                        <div class="caracteristique-salle">
-                            <i class="fas fa-users"></i>
-                            <span>Capacité: ${salle.capacite} places</span>
-                        </div>
-                        <div class="caracteristique-salle">
-                            <i class="fas fa-tools"></i>
-                            <span>Équipements: ${salle.equipement}</span>
-                        </div>
-                    </div>
-                `;
-                conteneurSalles.appendChild(carteSalle);
+            // Gestion de l'ajout/modification de salle
+            boutonAjouterSalle.addEventListener('click', function() {
+                enModeEdition = false;
+                titreModale.textContent = 'Ajouter une salle';
+                formActionInput.value = 'ajouter';
+                formulaireSalle.reset();
+                idSalleInput.value = '';
+                modaleSalle.style.display = 'flex';
             });
 
+            // Gestion des boutons modifier
             document.querySelectorAll('.bouton-modifier').forEach(btn => {
                 btn.addEventListener('click', function() {
-                    const salleId = parseInt(this.getAttribute('data-salle-id'));
-                    modifierSalle(salleId);
+                    const salleId = this.getAttribute('data-salle-id');
+                    const salleCard = this.closest('.carte-salle');
+                    
+                    enModeEdition = true;
+                    titreModale.textContent = 'Modifier la salle';
+                    formActionInput.value = 'modifier';
+                    idSalleInput.value = salleId;
+                    nomSalleInput.value = salleCard.querySelector('h3').textContent;
+                    
+                    const typeText = salleCard.querySelector('.caracteristique-salle:nth-child(1) span').textContent.replace('Type: ', '');
+                    typeSalleInput.value = typeText.toLowerCase();
+                    
+                    const capaciteText = salleCard.querySelector('.caracteristique-salle:nth-child(2) span').textContent.replace('Capacité: ', '').replace(' places', '');
+                    capaciteSalleInput.value = capaciteText;
+                    
+                    const equipementText = salleCard.querySelector('.caracteristique-salle:nth-child(3) span').textContent.replace('Équipements: ', '');
+                    equipementSalleInput.value = equipementText;
+                    
+                    modaleSalle.style.display = 'flex';
                 });
             });
 
+            // Gestion des boutons supprimer
             document.querySelectorAll('.bouton-supprimer').forEach(btn => {
                 btn.addEventListener('click', function() {
-                    const salleId = parseInt(this.getAttribute('data-salle-id'));
-                    afficherConfirmationSuppression(salleId);
+                    const salleId = this.getAttribute('data-salle-id');
+                    idSuppressionInput.value = salleId;
+                    modaleConfirmation.style.display = 'flex';
                 });
             });
-        }
 
-        function afficherModaleAjout() {
-            enModeEdition = false;
-            titreModale.textContent = 'Ajouter une salle';
-            formulaireSalle.reset();
-            idSalleInput.value = '';
-            modaleSalle.style.display = 'flex';
-        }
+            // Fermeture des modales
+            fermerModaleBtn.addEventListener('click', function() {
+                modaleSalle.style.display = 'none';
+            });
 
-        function modifierSalle(salleId) {
-            const salle = donneesSalles.find(s => s.id === salleId);
-            if (!salle) return;
+            fermerModaleConfirmationBtn.addEventListener('click', function() {
+                modaleConfirmation.style.display = 'none';
+            });
 
-            enModeEdition = true;
-            idSalleCourante = salleId;
-            titreModale.textContent = 'Modifier la salle';
-            idSalleInput.value = salle.id;
-            nomSalleInput.value = salle.nom;
-            typeSalleInput.value = salle.type;
-            capaciteSalleInput.value = salle.capacite;
-            equipementSalleInput.value = salle.equipement;
-            modaleSalle.style.display = 'flex';
-        }
+            boutonAnnuler.addEventListener('click', function() {
+                modaleSalle.style.display = 'none';
+            });
 
-        function enregistrerSalle(e) {
-            e.preventDefault();
-
-            const donneesSalle = {
-                nom: nomSalleInput.value.trim(),
-                type: typeSalleInput.value,
-                capacite: parseInt(capaciteSalleInput.value),
-                equipement: equipementSalleInput.value.trim(),
-                icone: obtenirIconeParType(typeSalleInput.value)
-            };
-
-            if (enModeEdition) {
-                const index = donneesSalles.findIndex(s => s.id === idSalleCourante);
-                if (index !== -1) {
-                    donneesSalle.id = idSalleCourante;
-                    donneesSalles[index] = donneesSalle;
-                }
-            } else {
-                const nouvelId = donneesSalles.length > 0 ? Math.max(...donneesSalles.map(s => s.id)) + 1 : 1;
-                donneesSalle.id = nouvelId;
-                donneesSalles.push(donneesSalle);
-            }
-
-            afficherSalles();
-            fermerModaleSalle();
-        }
-
-        function obtenirIconeParType(type) {
-            switch(type) {
-                case 'salle informatique': return 'desktop';
-                case 'laboratoire': return 'flask';
-                case 'amphithéâtre': return 'chalkboard-teacher';
-                default: return 'chalkboard-teacher';
-            }
-        }
-
-        function fermerModaleSalle() {
-            modaleSalle.style.display = 'none';
-        }
-
-        function afficherConfirmationSuppression(salleId) {
-            idSalleCourante = salleId;
-            modaleConfirmation.style.display = 'flex';
-        }
-
-        function supprimerSalle() {
-            donneesSalles = donneesSalles.filter(salle => salle.id !== idSalleCourante);
-            afficherSalles();
-            fermerModaleConfirmation();
-        }
-
-        function fermerModaleConfirmation() {
-            modaleConfirmation.style.display = 'none';
-        }
-
-        boutonAjouterSalle.addEventListener('click', afficherModaleAjout);
-        formulaireSalle.addEventListener('submit', enregistrerSalle);
-        fermerModaleBtn.addEventListener('click', fermerModaleSalle);
-        fermerModaleConfirmationBtn.addEventListener('click', fermerModaleConfirmation);
-        boutonAnnuler.addEventListener('click', fermerModaleSalle);
-        annulerSuppressionBtn.addEventListener('click', fermerModaleConfirmation);
-        confirmerSuppressionBtn.addEventListener('click', supprimerSalle);
-
-      
-        document.addEventListener('DOMContentLoaded', afficherSalles);
+            annulerSuppressionBtn.addEventListener('click', function() {
+                modaleConfirmation.style.display = 'none';
+            });
+        });
     </script>
 </body>
 </html>
