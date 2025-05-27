@@ -12,6 +12,15 @@ if (!isset($_SESSION['email'])) {
     header("Location: login.php");
     exit;
 }
+// 6ari9a li conecti bihe 3le base de donnes
+// $conn = new mysqli("localhost", "root", "", "utilisateurs_db");
+// if ($conn->connect_error) {
+//     die("Échec de la connexion à la base de données : " . $conn->connect_error);
+// }
+require_once 'config.php';
+// gba8t les salles mn chor la base de donnes
+$sql = "SELECT * FROM salles WHERE disponibilite = 'disponible'";
+$result = $conn->query($sql);
 
 // Contenu normal de la page d'accueil
 ?>
@@ -262,110 +271,49 @@ if (!isset($_SESSION['email'])) {
             </div>
             
             <div class="conteneur-salles" id="conteneur-salles">
-                <div class="carte-salle">
-                    <div class="entete-carte">
-                        <h3>Salle 103</h3>
-                    </div>
-                    <div class="corps-carte">
-                        <div class="caracteristique-salle">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                            <span>Type: Salle de cours</span>
+            <?php
+            if ($result->num_rows > 0) {
+                while ($salle = $result->fetch_assoc()) {
+                    $nom = htmlspecialchars($salle['nom']);
+                    $Capacité = htmlspecialchars($salle['capacité']);
+                    $Équipements = htmlspecialchars($salle['équipements']);
+                    $type = htmlspecialchars($salle['type']);
+                   
+                    // 6ari9a li ngba8 bihe les icon
+                    $icon = "fas fa-chalkboard-teacher";
+                    if ($type === "Amphithéâtre") $icon = "fas fa-chalkboard-teacher";
+                    elseif ($type === "Laboratoire") $icon = "fas fa-flask";
+                    elseif ($type === "Salle informatique") $icon = "fas fa-desktop";
+
+                    echo '
+                    <div class="carte-salle">
+                        <div class="entete-carte">
+                            <h3>' . $nom . '</h3>
                         </div>
-                        <div class="caracteristique-salle">
-                            <i class="fas fa-users"></i>
-                            <span>Capacité: 80 places</span>
+                        <div class="corps-carte">
+                            <div class="caracteristique-salle">
+                                <i class="' . $icon . '"></i>
+                                <span>Type: ' . $type . '</span>
+                            </div>
+                            <div class="caracteristique-salle">
+                                <i class="fas fa-users"></i>
+                                <span>Capacité: ' . $Capacité . ' places</span>
+                            </div>
+                            <div class="caracteristique-salle">
+                                <i class="fas fa-tools"></i>
+                                <span>Équipements: ' . $Équipements . '</span>
+                            </div>
+                            <button class="bouton-reserver">Réserver cette salle</button>
                         </div>
-                        <div class="caracteristique-salle">
-                            <i class="fas fa-tools"></i>
-                            <span>Équipements: Projecteur, tableau blanc, système audio</span>
-                        </div>
-                        <button class="bouton-reserver">Réserver cette salle</button>
-                    </div>
-                </div>
-                
-                <div class="carte-salle">
-                    <div class="entete-carte">
-                        <h3>Salle RSS</h3>
-                    </div>
-                    <div class="corps-carte">
-                        <div class="caracteristique-salle">
-                            <i class="fas fa-desktop"></i>
-                            <span>Type: Salle informatique</span>
-                        </div>
-                        <div class="caracteristique-salle">
-                            <i class="fas fa-users"></i>
-                            <span>Capacité: 25 places</span>
-                        </div>
-                        <div class="caracteristique-salle">
-                            <i class="fas fa-tools"></i>
-                            <span>Équipements: Ordinateurs, vidéoprojecteur</span>
-                        </div>
-                        <button class="bouton-reserver">Réserver cette salle</button>
-                    </div>
-                </div>
-                
-                <div class="carte-salle">
-                    <div class="entete-carte">
-                        <h3>Salle Namélozine</h3>
-                    </div>
-                    <div class="corps-carte">
-                        <div class="caracteristique-salle">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                            <span>Type: Salle de cours</span>
-                        </div>
-                        <div class="caracteristique-salle">
-                            <i class="fas fa-users"></i>
-                            <span>Capacité: 80 places</span>
-                        </div>
-                        <div class="caracteristique-salle">
-                            <i class="fas fa-tools"></i>
-                            <span>Équipements: Tableau interactif, système de visioconférence</span>
-                        </div>
-                        <button class="bouton-reserver">Réserver cette salle</button>
-                    </div>
-                </div>
-                
-                <div class="carte-salle">
-                    <div class="entete-carte">
-                        <h3>Salle Khawarami</h3>
-                    </div>
-                    <div class="corps-carte">
-                        <div class="caracteristique-salle">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                            <span>Type: Amphithéâtre</span>
-                        </div>
-                        <div class="caracteristique-salle">
-                            <i class="fas fa-users"></i>
-                            <span>Capacité: 130 places</span>
-                        </div>
-                        <div class="caracteristique-salle">
-                            <i class="fas fa-tools"></i>
-                            <span>Équipements: Système audiovisuel complet, climatisation</span>
-                        </div>
-                        <button class="bouton-reserver">Réserver cette salle</button>
-                    </div>
-                </div>
-                
-                <div class="carte-salle">
-                    <div class="entete-carte">
-                        <h3>Laboratoire B204</h3>
-                    </div>
-                    <div class="corps-carte">
-                        <div class="caracteristique-salle">
-                            <i class="fas fa-flask"></i>
-                            <span>Type: Laboratoire</span>
-                        </div>
-                        <div class="caracteristique-salle">
-                            <i class="fas fa-users"></i>
-                            <span>Capacité: 40 places</span>
-                        </div>
-                        <div class="caracteristique-salle">
-                            <i class="fas fa-tools"></i>
-                            <span>Équipements: Matériel de laboratoire complet, hottes de sécurité</span>
-                        </div>
-                        <button class="bouton-reserver">Réserver cette salle</button>
-                    </div>
-                </div>
+                    </div>';
+                }
+            } else {
+                echo "<p>Aucune salle disponible pour le moment.</p>";
+            }
+            $conn->close();
+            ?>
+        </div>
+    </div>
             </div>
         </div>
     </div>

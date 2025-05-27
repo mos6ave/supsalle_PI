@@ -54,6 +54,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->execute();
                 $stmt->close();
                 break;
+                case 'changer_disponibilite':
+                    $id = intval($_POST['id']);
+                    // Récupérer la valeur actuelle
+                    $res = $conn->query("SELECT disponibilite FROM salles WHERE id = $id");
+                    if ($res && $row = $res->fetch_assoc()) {
+                        $nouvelle_dispo = ($row['disponibilite'] === 'disponible') ? 'indisponinle' : 'disponible';
+                        $stmt = $conn->prepare("UPDATE salles SET disponibilite=? WHERE id=?");
+                        $stmt->bind_param("si", $nouvelle_dispo, $id);
+                        $stmt->execute();
+                        $stmt->close();
+                    }
+                    header("Location: adminstrateur_salles.php");
+                    exit;
         }
         
         // Rafraîchir la page après modification
@@ -362,6 +375,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 gap: 5px;
             }
         }
+        .btn-disponibilite:hover {
+    opacity: 0.85;
+}
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
@@ -417,6 +433,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <i class="fas fa-tools"></i>
                             <span>Équipements: <?= htmlspecialchars($salle['équipements']) ?></span>
                         </div>
+                        <div class="caracteristique-salle">
+    <form method="post" class="form-disponibilite">
+        <input type="hidden" name="action" value="changer_disponibilite">
+        <input type="hidden" name="id" value="<?= $salle['id'] ?>">
+        <button type="submit" class="btn-disponibilite" style="background-color: <?= ($salle['disponibilite'] === 'disponible') ? '#28a745' : '#dc3545' ?>; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
+            <?= ($salle['disponibilite'] === 'disponible') ? 'Disponible' : 'Indisponible' ?>
+        </button>
+    </form>
+</div>
                     </div>
                 </div>
                 <?php endforeach; ?>

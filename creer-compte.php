@@ -37,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $expiration = date("Y-m-d H:i:s", strtotime('+10 minutes'));
 
             // Insertion avec OTP et is_verified = 0
-            $stmt = $conn->prepare("INSERT INTO users (fullname, email, password, otp_code, otp_expiration, is_verified) VALUES (?, ?, ?, ?, ?, 0)");
+            $stmt = $conn->prepare("INSERT INTO users (fullname, email, password, otp_code, otp_expiration, is_verified) VALUES (?, ?, ?, ?, ?, 1)");
             $stmt->bind_param("sssss", $fullname, $email, $hashed, $otp, $expiration);
 
             if ($stmt->execute()) {
