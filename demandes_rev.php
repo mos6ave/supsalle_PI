@@ -149,8 +149,8 @@
             <ul class="menu-lateral">
                 <li><a href="adminstrateur_salles.php"><i class="fa-solid fa-building"></i> Gestions des salles</a></li>
                 <li><a href="demandes_rev.php" class="active"><i class="fa-solid fa-calendar-days"></i>Gestion des réservations</a></li>
-                <li><a href="utilisateurs.php"><i class="fa-solid fa-users-gear"></i>Gestion des utilisateurs</a></li>
-                <li><a href="compte.php"><i class="fa-solid fa-gears"></i>Mon compte</a></li>
+                <li><a href="getios_users_admin.php"><i class="fa-solid fa-users-gear"></i>Gestion des utilisateurs</a></li>
+                <li><a href="admin_compte.php"><i class="fa-solid fa-gears"></i>Mon compte</a></li>
             </ul>
         </div>
 

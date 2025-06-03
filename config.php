@@ -4,7 +4,7 @@ $host = 'localhost';
 $user = 'root';
 $pass = '';
 $db   = 'utilisateurs_db';
-
+//Connexion à la base de données avec mysqli (objet
 $conn = new mysqli($host, $user, $pass, $db);
 
 if ($conn->connect_error) {
