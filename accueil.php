@@ -2,8 +2,8 @@
 session_start();
 
 // Si un admin arrive sur la page utilisateur, redirigez-le
-if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-    header("Location: admin_dashboard.php");
+if (isset($_SESSION['role']) && $_SESSION['role'] !== 'user') {
+    header("Location: login.php");
     exit;
 }
 
@@ -12,11 +12,7 @@ if (!isset($_SESSION['email'])) {
     header("Location: login.php");
     exit;
 }
-// 6ari9a li conecti bihe 3le base de donnes
-// $conn = new mysqli("localhost", "root", "", "utilisateurs_db");
-// if ($conn->connect_error) {
-//     die("Échec de la connexion à la base de données : " . $conn->connect_error);
-// }
+
 require_once 'config.php';
 // gba8t les salles mn chor la base de donnes
 $sql = "SELECT * FROM salles WHERE disponibilite = 'disponible'";
@@ -289,6 +285,7 @@ $result = $conn->query($sql);
                     <div class="carte-salle">
                         <div class="entete-carte">
                             <h3>' . $nom . '</h3>
+
                         </div>
                         <div class="corps-carte">
                             <div class="caracteristique-salle">
@@ -303,10 +300,12 @@ $result = $conn->query($sql);
                                 <i class="fas fa-tools"></i>
                                 <span>Équipements: ' . $Équipements . '</span>
                             </div>
-                            <button class="bouton-reserver">Réserver cette salle</button>
+                            <button class="bouton-reserver" onclick="window.location.href=\'nouvelle_reservastion.php?id_salle='.$salle['id'].'\'">Réserver cette salle</button>
                         </div>
                     </div>';
                 }
+                        //    bdlthe                 // <button class="bouton-reserver">Réserver cette salle</button>
+
             } else {
                 echo "<p>Aucune salle disponible pour le moment.</p>";
             }
@@ -319,11 +318,12 @@ $result = $conn->query($sql);
     </div>
 
     <script>
-        // Fonction pour rediriger vers la page de réservation
-        function reserverSalle(nomSalle) {
-            localStorage.setItem('salleSelectionnee', nomSalle);
-            window.location.href = "nouvelle_reservation.php";
-        }
+        // Fonction pour rediriger vers la page de réservation//
+        //bdltheb on clik ngr le button
+        // function reserverSalle(nomSalle) {
+        //     localStorage.setItem('salleSelectionnee', nomSalle);
+        //     window.location.href = "nouvelle_reservastion.php";
+        // }
 
         document.addEventListener('DOMContentLoaded', function() {
             // Gestion des boutons de réservation

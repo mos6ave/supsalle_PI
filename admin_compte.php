@@ -1,17 +1,19 @@
 <?php
 session_start(); 
-if (!isset($_SESSION['email'])) {
+if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'admin') {
     header("Location: login.php");
     exit;
 }
+require_once 'config.php';
 $email = $_SESSION['email']; 
+
 ?>
 
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>SupSalle - Mon Compte</title>
+    <title>SupSalle - ADMIN-Compte</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * {
@@ -228,37 +230,38 @@ $email = $_SESSION['email'];
                 <h2>SupSalle</h2>
             </div>
             <ul class="menu-lateral">
-                <li><a href="accueil.php"><i class="fas fa-home"></i> Accueil</a></li>
-                <li><a href="liste_rev.php"><i class="fas fa-calendar-check"></i> Mes Réservations</a></li>
-                <li><a href="Notification.php"><i class="fas fa-bell"></i> Notifications</a></li>
-                <li><a href="compte.php" class="active"><i class="fas fa-user-cog"></i> Mon Compte</a></li>
+                <li><a href="adminstrateur_salles.php"><i class="fa-solid fa-building"></i> Gestions des salles</a></li>
+                <li><a href="demandes_rev.php" ><i class="fa-solid fa-calendar-days"></i>Gestion des réservations</a></li>
+                <li><a href="getios_users_admin.php"><i class="fa-solid fa-users-gear"></i>Gestion des utilisateurs</a></li>
+                <li><a href="admin_compte.php"class="active"><i class="fa-solid fa-gears"></i>Mon compte</a></li>
             </ul>
         </div>
+       
 
         <div class="contenu-principal">
-            <h1 class="titre-page"><i class="fas fa-cog"></i> Paramètres du compte</h1>
-            
-            <form action="update_account.php" method="post">
-                <div class="groupe-formulaire">
+            <h1 class="titre-page"><i class="fas fa-cog"></i> Paramètres du Admin-compte</h1>
+            <form action="">
+                 <div class="groupe-formulaire">
                     <i class="fas fa-envelope"></i>
                     <div class="info-compte"><?php echo htmlspecialchars($email); ?></div>
                 </div>
-
-                
-
-                
-
+                                
                 <a href="logout.php" class="bouton-deconnexion">Se déconnecter</a>
 
+
             </form>
+            
+
+           
         </div>
     </div>
+     
 
     <script>
         // Gestion du menu mobile
-        // document.getElementById('bouton-menu-toggle').addEventListener('click', function() {
-        //     document.querySelector('.barre-laterale').classList.toggle('ouvert');
-        // });
+        document.getElementById('bouton-menu-toggle').addEventListener('click', function() {
+            document.querySelector('.barre-laterale').classList.toggle('ouvert');
+        });
 
         // // Activation des champs lors du clic sur le bouton modifier
         // document.querySelectorAll('.bouton-modifier').forEach(btn => {

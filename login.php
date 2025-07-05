@@ -8,20 +8,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $email = $_POST['email'];
     $password = $_POST['password'];
 //houn zdt vih role
-    $stmt = $conn->prepare("SELECT password, is_verified,role FROM users WHERE email = ?");
+    $stmt = $conn->prepare("SELECT  password, id, is_verified,role FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $stmt->store_result();
 
     if ($stmt->num_rows === 1) {
       //zdt role houn mlli
-        $stmt->bind_result($hashed, $is_verified,$role);
+        $stmt->bind_result($hashed, $user_id, $is_verified, $role);
         $stmt->fetch();
 
         if (!$is_verified) {
             $message = "Veuillez vérifier votre compte avant de vous connecter.";
         } else if (password_verify($password, $hashed)) {
           //dyrthe 2ne ramle ,ndour nkrd bihe email w role l'utlusateur wla adminsrateurr
+          $_SESSION['user_id']=$user_id;
           $_SESSION['email'] = $email;  
           $_SESSION['role']=$role;
           if($role==='admin'){

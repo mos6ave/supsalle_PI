@@ -378,11 +378,84 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         .btn-disponibilite:hover {
     opacity: 0.85;
+    
+}
+  .bouton-menu-toggle {
+                display: block;
+            }
+        
+
+        @media (min-width: 769px) {
+            .bouton-menu-toggle {
+                display: none !important;
+            }
+        }
+         .bouton-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            font-size: 24px;
+            background-color: #3A503C;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            z-index: 1001;
+            cursor: pointer;
+        }
+
+        .bouton-menu-toggle {
+                display: block;
+            }
+             @media (max-width: 768px) {
+            .barre-laterale {
+                left: -250px;
+                transition: left 0.3s ease;
+            }
+            @media (max-width: 768px) {
+    .barre-laterale {
+        left: -250px;
+        position: fixed;
+        transition: left 0.3s ease;
+        z-index: 1000;
+    }
+    
+    .barre-laterale.ouvert {
+        left: 0;
+    }
+    
+    .contenu-principal {
+        margin-left: 0;
+        width: 100%;
+    }
+}
+
+.bouton-menu-toggle {
+    display: none;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    font-size: 24px;
+    background-color: #3A503C;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    z-index: 1001;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .bouton-menu-toggle {
+        display: block;
+    }
 }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
+     <button id="bouton-menu-toggle" class="bouton-menu-toggle">☰</button>
     <div class="conteneur">
         <div class="barre-laterale">
             <div class="entete-barre-laterale">
@@ -422,8 +495,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="caracteristique-salle">
                             <i class="fas fa-<?= 
                                 ($salle['type'] === 'salle informatique') ? 'desktop' : 
-                                (($salle['type'] === 'laboratoire') ? 'flask' : 'chalkboard-teacher') 
-                            ?>"></i>
+                                (($salle['type'] === 'laboratoire') ? 'flask' : 'chalkboard-teacher') ?>">
+                            </i>
                             <span>Type: <?= ucfirst($salle['type']) ?></span>
                         </div>
                         <div class="caracteristique-salle">
@@ -453,7 +526,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="modale" id="modale-salle">
         <div class="contenu-modale">
             <div class="entete-modale">
-                <h3 class="titre-modale" id="titre-modale">Ajouter une salle</h3>
+                <h3 class="titre-modale" id="titre-modale"></h3>
                 <button class="bouton-fermer" id="fermer-modale">&times;</button>
             </div>
             <form id="formulaire-salle" method="post">
@@ -528,7 +601,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             let enModeEdition = false;
 
-            // Gestion de l'ajout/modification de salle
+            // l'ajout/modification de salle
             boutonAjouterSalle.addEventListener('click', function() {
                 enModeEdition = false;
                 titreModale.textContent = 'Ajouter une salle';
@@ -538,7 +611,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 modaleSalle.style.display = 'flex';
             });
 
-            // Gestion des boutons modifier
+            // des boutons modifier
             document.querySelectorAll('.bouton-modifier').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const salleId = this.getAttribute('data-salle-id');
@@ -556,7 +629,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     const capaciteText = salleCard.querySelector('.caracteristique-salle:nth-child(2) span').textContent.replace('Capacité: ', '').replace(' places', '');
                     capaciteSalleInput.value = capaciteText;
                     
-                    const equipementText = salleCard.querySelector('.caracteristique-salle:nth-child(3) span').textContent.replace('Équipements: ', '');
+                    const equipementText = salleCard.querySelector('.caracteristique-salle:nth-child(3) span').textContent.replace('Équipements: ','');
                     equipementSalleInput.value = equipementText;
                     
                     modaleSalle.style.display = 'flex';
@@ -588,6 +661,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             annulerSuppressionBtn.addEventListener('click', function() {
                 modaleConfirmation.style.display = 'none';
             });
+        });
+        document.getElementById('bouton-menu-toggle').addEventListener('click', function() {
+            document.querySelector('.barre-laterale').classList.toggle('ouvert');
         });
     </script>
 </body>

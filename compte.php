@@ -22,7 +22,7 @@ $email = $_SESSION['email'];
         }
 
         body {
-            background-color: #f5f5f5;
+            background-color:  #f5f5f5;
             color: #333;
             min-height: 100vh;
         }
@@ -244,18 +244,19 @@ $email = $_SESSION['email'];
                     <div class="info-compte"><?php echo htmlspecialchars($email); ?></div>
                 </div>
 
-                <div class="groupe-formulaire">
+                <!-- <div class="groupe-formulaire">
                     <i class="fas fa-lock"></i>
                     <input type="password" class="controle-formulaire" name="password" placeholder="Nouveau mot de passe" required>
                     <button type="button" class="bouton-modifier"><i class="fas fa-pencil-alt"></i></button>
-                </div>
+                </div> -->
 
                 <div class="groupe-formulaire">
                     <i class="fas fa-headset"></i>
                     <button type="button" class="bouton-contact">Contactez-nous</button>
                 </div>
 
-                <button type="submit" class="bouton-envoyer">Mettre à jour le mot de passe</button>
+                <!-- <button type="submit" class="bouton-envoyer">Mettre à jour le mot de passe</button> -->
+                <a href="reset-password.php"class="bouton-envoyer" >Mettre à jour le mot de passe</a>
                 <a href="logout.php" class="bouton-deconnexion">Se déconnecter</a>
 
             </form>
@@ -263,19 +264,17 @@ $email = $_SESSION['email'];
     </div>
 
     <script>
-        // Gestion du menu mobile
         document.getElementById('bouton-menu-toggle').addEventListener('click', function() {
             document.querySelector('.barre-laterale').classList.toggle('ouvert');
         });
 
-        // Activation des champs lors du clic sur le bouton modifier
-        document.querySelectorAll('.bouton-modifier').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const input = this.previousElementSibling;
-                input.removeAttribute('readonly');
-                input.focus();
-            });
-        });
+        // document.querySelectorAll('.bouton-modifier').forEach(btn => {
+        //     btn.addEventListener('click', function() {
+        //         const input = this.previousElementSibling;
+        //         input.removeAttribute('readonly');
+        //         input.focus();
+        //     });
+        // });
     </script>
 </body>
 </html>

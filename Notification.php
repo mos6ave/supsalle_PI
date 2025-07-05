@@ -1,8 +1,28 @@
+<?php
+session_start();
+if (!isset($_SESSION['email'], $_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+
+require_once 'config.php';
+
+// Marquer les notifications comme lues
+$user_id = $_SESSION['user_id'];
+$conn->query("UPDATE notifications SET is_read = 1 WHERE user_id = $user_id");
+
+// Récupérer les notifications
+$notifications = $conn->query("SELECT * FROM notifications 
+                              WHERE user_id = $user_id 
+                              ORDER BY created_at DESC")->fetch_all(MYSQLI_ASSOC);
+?>
+
+ss
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>SupSalle - Notifications</title>
+    <title>SupSalle - Mon Compte</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * {
@@ -13,7 +33,7 @@
         }
 
         body {
-            background-color: #f5f5f5;
+            background-color:  #f5f5f5;
             color: #333;
             min-height: 100vh;
         }
@@ -49,7 +69,8 @@
         }
 
         .menu-lateral li {
-            margin: 10px;
+            margin-bottom: 5px;
+            background-color: #698A6C;
         }
 
         .menu-lateral a {
@@ -57,20 +78,13 @@
             color: #ecf0f1;
             text-decoration: none;
             padding: 10px 20px;
-            background-color: #698A6C;
-            border-radius: 5px;
             transition: all 0.3s;
         }
 
-        .menu-lateral a:hover {
-            background-color: #addaba;
-            color: #3A503C;
-        }
-
+        .menu-lateral a:hover,
         .menu-lateral a.active {
             background-color: #addaba;
             color: #3A503C;
-            font-weight: bold;
         }
 
         /* Contenu principal */
@@ -78,42 +92,89 @@
             margin-left: 250px;
             padding: 30px;
             width: calc(100% - 250px);
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
         .titre-page {
             font-size: 1.8rem;
             color: #3A503C;
             margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        /* Notifications */
-        .notification {
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
+        /* Formulaire */
+        .groupe-formulaire {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .groupe-formulaire i {
+            color: #3A503C;
+            width: 30px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .info-compte {
+            flex: 1;
+            padding: 8px 10px;
+            font-size: 1rem;
+        }
+
+        .controle-formulaire {
+            flex: 1;
+            border: none;
+            padding: 8px 10px;
+            font-size: 1rem;
+            background: none;
+        }
+
+        .controle-formulaire:focus {
+            outline: none;
+        }
+
+        .bouton-modifier {
+            color: #3A503C;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .bouton-envoyer {
+            background-color: #5fa77c;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
             font-weight: bold;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+            transition: background-color 0.3s;
         }
 
-        .notification-acceptee {
-            background-color: #d4edda;
-            color: #155724;
-            border-left: 5px solid #28a745;
+        .bouton-envoyer:hover {
+            background-color: #4e8e68;
         }
 
-        .notification-refusee {
-            background-color: #f8d7da;
-            color: #721c24;
-            border-left: 5px solid #dc3545;
+        .bouton-contact {
+            background: none;
+            border: none;
+            color: #5fa77c;
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 0;
+            margin-left: 35px;
         }
 
-        .notification-attente {
-            background-color: #fff3cd;
-            color: #856404;
-            border-left: 5px solid #ffc107;
-        }
-
-        /* Bouton menu mobile */
+        /* Menu mobile */
         .bouton-menu-toggle {
             display: none;
             position: fixed;
@@ -149,6 +210,80 @@
                 width: 100%;
             }
         }
+           .bouton-deconnexion {
+            display: inline-block;
+            background-color: #c0392b;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+}
+    
+
+        .bouton-deconnexion:hover {
+          background-color: #a93226;
+}
+.notification {
+            background: white;
+            border-left: 4px solid #5fa77c;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .notification.unread {
+            border-left-color: #3A503C;
+            background-color: #f8f9fa;
+        }
+        
+        .notification-date {
+            color: #6c757d;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+                .notification.refusee {
+            border-left: 4px solid #c0392b;
+            background-color: #fdf0f0;
+        }
+        
+        .notification.desactivee {
+            border-left: 4px solid #c0392b;
+            background-color: #fdf0f0;
+        }
+        
+        .notification.acceptee {
+            border-left: 4px solid #5fa77c;
+            background-color: #f0f9f0;
+        }
+        
+        .notification.attente {
+            border-left: 4px solid #f39c12;
+            background-color: #fff8e6;
+        }
+        
+        .notification-icon {
+            margin-right: 10px;
+        }
+        
+        .refusee .notification-icon,
+        .desactivee .notification-icon {
+            color: #c0392b;
+        }
+        
+        .acceptee .notification-icon {
+            color: #5fa77c;
+        }
+        
+        .attente .notification-icon {
+            color: #f39c12;
+        }
+
+
+        
     </style>
 </head>
 <body>
@@ -162,13 +297,50 @@
             <ul class="menu-lateral">
                 <li><a href="accueil.php"><i class="fas fa-home"></i> Accueil</a></li>
                 <li><a href="liste_rev.php"><i class="fas fa-calendar-check"></i> Mes Réservations</a></li>
-                <li><a href="Notification.php" class="active"><i class="fas fa-bell"></i> Notifications</a></li>
-                <li><a href="compte.php"><i class="fas fa-user-cog"></i> Mon Compte</a></li>
+                <li><a href="Notification.php"class="active"><i class="fas fa-bell"></i> Notifications</a></li>
+                <li><a href="compte.php" ><i class="fas fa-user-cog"></i> Mon Compte</a></li>
             </ul>
         </div>
 
+
+ 
+
         <div class="contenu-principal">
             <h1 class="titre-page">Mes Notifications</h1>
+            <?php if (empty($notifications)): ?>
+            <p>Aucune notification</p>
+        <?php else: ?>
+            <?php foreach ($notifications as $notification): ?>
+                  <?php
+                    // Déterminer la classe CSS selon le contenu du message
+                    $message = strtolower($notification['message']);
+                    $classe = '';
+                    $icon = 'fa-bell'; // Icône par défaut
+                    
+                    if (strpos($message, 'refus') !== false) {
+                        $classe = 'refusee';
+                        $icon = 'fa-times-circle';
+                    } elseif (strpos($message, 'désactiv') !== false || strpos($message, 'desactiv') !== false) {
+                        $classe = 'desactivee';
+                        $icon = 'fa-user-slash';
+                    } elseif (strpos($message, 'accept') !== false) {
+                        $classe = 'acceptee';
+                        $icon = 'fa-check-circle';
+                    } elseif (strpos($message, 'attente') !== false) {
+                        $classe = 'attente';
+                        $icon = 'fa-clock';
+                    }
+                ?>
+                <div class="notification <?= $classe ?> <?= $notification['is_read'] ? '' : 'unread' ?>">
+                    <i class="fas <?= $icon ?> notification-icon"></i>
+                    <p><?= htmlspecialchars($notification['message']) ?></p>
+                    <div class="notification-date">
+                        <?= date('d/m/Y H:i', strtotime($notification['created_at'])) ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </div>
 
             <!-- <//?php foreach ($notifications as $notif): ?>
                 <//?php

@@ -10,28 +10,6 @@ require_once 'config.php';
 if($_SERVER['REQUEST_METHOD']==='POST'){
     if(isset($_POST['action'])){
         $id=intval($_POST['id']);
-
-
-        switch($_POST['action'])
-        {
-            case 'modifier':
-                $fulname=$conn->real_escape_string($_POST['fullname']);
-                $email=$conn->real_escape_string($_POST['email']);
-                $is_verified=isset($_POST['is_verified'])? 1 :0;
-                $stmt=$conn->prepare("UPDATE users SET fullname=?, email=?, is_verified=? WHERE id=?");
-                $stmt->bind_param("ssii",$fullname, $email, $is_verified, $id);
-                $stmt->execute();
-                $_SESSION['message'] = "Utilisateur modifié avec succès";
-                break;
-            case 'supprimer':
-                $stmt=$conn->prepare("DELETE FROM users WHERE id=? AND role='user'");
-                $stmt->bind_param("i",$id);
-                $stmt->execute();
-                 $_SESSION['message'] = "Utilisateur supprimé avec succès";
-                break;
-        }
-        header("Location:getios_users_admin.php");
-        exit;
     }
 }
 
@@ -149,121 +127,98 @@ if($result->num_rows>0){
         .tableau-utilisateurs tr:hover {
             background-color: #f5f5f5;
         }
-        
-        .btn-modifier {
-            background-color: #698A6C;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 3px;
-            cursor: pointer;
-            margin-right: 5px;
-        }
-        
-        .btn-supprimer {
-            background-color: #d9534f;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-        
-        .btn-modifier:hover {
-            background-color: #5a7961;
-        }
-        
-        .btn-supprimer:hover {
-            background-color: #c9302c;
-        }
-        
-        .statut-verifie {
-            color: #5cb85c;
-            font-weight: bold;
-        }
-        
-        .statut-non-verifie {
-            color: #d9534f;
-        }
-        
-        .message {
-            padding: 10px;
-            margin-bottom: 20px;
-            border-radius: 4px;
-        }
-        
-        .message-success {
-            background-color: #dff0d8;
-            color: #3c763d;
-            border: 1px solid #d6e9c6;
-        }
-        
-        .formulaire-modification {
+        tableau-utilisateurs td {
+        padding: 15px;
+        border-bottom: 1px solid #f0f0f0;
+        vertical-align: middle;
+    }
+         .bouton-menu-toggle {
             display: none;
-            background-color: #f9f9f9;
-            padding: 15px;
-            margin-top: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        
-        .formulaire-modification input[type="text"],
-        .formulaire-modification input[type="email"] {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        
-        .formulaire-modification label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        
-        .formulaire-modification .checkbox-container {
-            margin-bottom: 10px;
-        }
-        
-        .btn-enregistrer {
-            background-color: #5cb85c;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            font-size: 24px;
+            background-color: #3A503C;
             color: white;
             border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
+            padding: 10px 15px;
+            border-radius: 5px;
+            z-index: 1001;
             cursor: pointer;
         }
-        
-        .btn-annuler {
-            background-color: #f0ad4e;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-left: 10px;
+
+        .bouton-menu-toggle {
+                display: block;
+            }
+             @media (max-width: 768px) {
+            .barre-laterale {
+                left: -250px;
+                transition: left 0.3s ease;
+            }
+            
+            .barre-laterale.ouvert {
+                left: 0;
+            }
+            
+            .contenu-principal {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .bouton-menu-toggle {
+                display: block;
+            }
         }
-        
-        .btn-enregistrer:hover {
-            background-color: #4cae4c;
+
+        @media (min-width: 769px) {
+            .bouton-menu-toggle {
+                display: none !important;
+            }
         }
+        .statut-actif {
+    color: #28a745; /* Vert pour actif */
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 12px;
+    background-color: rgba(40, 167, 69, 0.1);
+    display: inline-block;
+}
+
+.statut-inactif {
+    color: #dc3545; /* Rouge pour inactif */
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 12px;
+    background-color: rgba(220, 53, 69, 0.1);
+    display: inline-block;
+    text-decoration: line-through;
+}
+.statut-verifie {
+    color: #2ecc71;
+    font-weight: bold;
+}
+.statut-non-verifie {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+
+
         
-        .btn-annuler:hover {
-            background-color: #ec971f;
-        }
+         
     </style>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
+    <button id="bouton-menu-toggle" class="bouton-menu-toggle">☰</button>
     <div class="conteneur">
         <div class="barre-laterale">
             <div class="entete-barre-laterale">
                 <h2>SupSalle Admin</h2>
             </div>
             <ul class="menu-lateral">
-                <li><a href="adminstrateur_salle.php" ><i class="fa-solid fa-building"></i> Gestions des salles</a></li>
+                <li><a href="adminstrateur_salles.php" ><i class="fa-solid fa-building"></i> Gestions des salles</a></li>
                 <li><a href="demandes_rev.php"><i class="fa-solid fa-calendar-days"></i>Gestion des réservations</a></li>
                 <li><a href="getios_users_admin.php" class="active"><i class="fa-solid fa-users-gear"></i>Gestion des utilisateurs</a></li>
                 <li><a href="admin_compte.php"><i class="fa-solid fa-gears"></i>Mon compte</a></li>
@@ -273,20 +228,15 @@ if($result->num_rows>0){
         <div class="contenu-principal">
             <h1>Gestion des utilisateurs</h1>
             
-            <?php if(isset($_SESSION['message'])): ?>
-                <div class="message message-success">
-                    <?php echo $_SESSION['message']; unset($_SESSION['message']); ?>
-                </div>
-            <?php endif; ?>
-            
             <table class="tableau-utilisateurs">
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Nom complet</th>
                         <th>Email</th>
-                        <th>Statut</th>
+                        <th>Verification</th>
                         <th>Rôle</th>
+                        <th>Statut</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -298,42 +248,29 @@ if($result->num_rows>0){
                         <td><?php echo htmlspecialchars($user['email']); ?></td>
                         <td>
                             <span class="<?php echo $user['is_verified'] ? 'statut-verifie' : 'statut-non-verifie'; ?>">
-                                <?php echo $user['is_verified'] ? 'Vérifié' : 'Non vérifié'; ?>
+                                   <i class="fas <?php echo $user['is_verified'] ? 'fa-check-circle' : 'fa-times-circle'; ?>"></i>
+                               <?php echo $user['is_verified'] ? 'Vérifié' : 'Non vérifié'; ?>
+               </span>
                             </span>
                         </td>
                         <td><?php echo htmlspecialchars($user['role']); ?></td>
                         <td>
-                            <button class="btn-modifier" onclick="afficherFormulaireModification(<?php echo $user['id']; ?>)">
-                                Modifier
-                            </button>
-                            <form method="POST" action="getios_users_admin.php" style="display:inline;">
-                                <input type="hidden" name="id" value="<?php echo $user['id']; ?>">
-                                <input type="hidden" name="action" value="supprimer">
-                                <button type="submit" class="btn-supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')">
-                                    Supprimer
-                                </button>
-                            </form>
+                             <span class="statut-<?php echo $user['is_active'] ? 'actif' : 'inactif'; ?>">
+                                 <?php echo $user['is_active'] ? 'Actif' : 'Inactif'; ?>
+                               </span>
                             
-                            <div id="formulaire-modification-<?php echo $user['id']; ?>" class="formulaire-modification">
-                                <form method="POST" action="getios_users_admin.php">
-                                    <input type="hidden" name="id" value="<?php echo $user['id']; ?>">
-                                    <input type="hidden" name="action" value="modifier">
-                                    
-                                    <label for="fullname-<?php echo $user['id']; ?>">Nom complet:</label>
-                                    <input type="text" id="fullname-<?php echo $user['id']; ?>" name="fullname" value="<?php echo htmlspecialchars($user['fullname']); ?>" required>
-                                    
-                                    <label for="email-<?php echo $user['id']; ?>">Email:</label>
-                                    <input type="email" id="email-<?php echo $user['id']; ?>" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
-                                    
-                                    <div class="checkbox-container">
-                                        <input type="checkbox" id="is_verified-<?php echo $user['id']; ?>" name="is_verified" <?php echo $user['is_verified'] ? 'checked' : ''; ?>>
-                                        <label for="is_verified-<?php echo $user['id']; ?>">Compte vérifié</label>
-                                    </div>
-                                    
-                                    <button type="submit" class="btn-enregistrer">Enregistrer</button>
-                                    <button type="button" class="btn-annuler" onclick="cacherFormulaireModification(<?php echo $user['id']; ?>)">Annuler</button>
-                                </form>
-                            </div>
+                      </td>
+                        <td>
+                             <a href="Modifier_user_admin.php?id=<?= $user['id'] ?> "><i class="fas fa-edit"></i>Modifier</a> 
+
+                               <a href="desactivee_user_admin.php?id=<?=$user['id']?>" onclick="return confirm('Confirmer la désactivation de cet utilisateur ?');">
+                                        <i class="fas fa-user-slash"></i> Désactiver</a>
+                                      
+
+                        </td>
+                        
+                           
+                            
                         </td>
                     </tr>
                     <?php endforeach; ?>
@@ -343,20 +280,12 @@ if($result->num_rows>0){
     </div>
     
     <script>
-        function afficherFormulaireModification(id) {
-            // Cacher tous les formulaires de modification d'abord
-            var formulaires = document.querySelectorAll('.formulaire-modification');
-            formulaires.forEach(function(form) {
-                form.style.display = 'none';
-            });
-            
-            // Afficher le formulaire correspondant à l'ID
-            document.getElementById('formulaire-modification-' + id).style.display = 'block';
-        }
-        
-        function cacherFormulaireModification(id) {
-            document.getElementById('formulaire-modification-' + id).style.display = 'none';
-        }
-    </script>
+        // Gestion du menu mobile
+        document.getElementById('bouton-menu-toggle').addEventListener('click', function() {
+            document.querySelector('.barre-laterale').classList.toggle('ouvert');
+        });
+      
+      </script>
+   
 </body>
 </html>
